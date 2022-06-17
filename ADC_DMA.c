@@ -13,7 +13,8 @@ uint16_t adcMosfet[ADC_BUF_LEN/2];
 uint16_t adcVoltage[ADC_BUF_LEN/2];
 uint16_t adc_buf[ADC_BUF_LEN];
 static volatile uint16_t *adc_buf_ptr;
-uint8_t dataReadyFlag;
+uint8_t dataReadyFlag = 0;
+uint8_t buttonPressFlag = 0;
 
 
 //main
@@ -32,4 +33,14 @@ void HAL_ADC_ConvHalfCpltCallback(...){
 void HAL_ADC_ConvCpltCallback(...){
 	adc_buf_ptr = &adc_buf[ADC_BUF_LEN/2];
 	dataReadyFlag = 1;	
+}
+
+//IRQ EXTIBUttton(){
+	if(buttonPressFlag == 0){
+		HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_buf, ADC_BUF_LEN);
+	} 
+	else {
+		HAL_ADC_Stop_DMA(&hadc1, (uint32_t*)adc_buf, ADC_BUF_LEN);
+	}
+	buttonPressFlag = !buttonPressFlag;			//toggle 0 and 1
 }
